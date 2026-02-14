@@ -13,6 +13,12 @@ const PORT = Number(process.env.PORT || 3001);
 const OPENWEBUI_BASE_URL = (process.env.OPENWEBUI_BASE_URL || 'http://localhost:8080').replace(/\/$/, '');
 const OPENWEBUI_API_KEY = process.env.OPENWEBUI_API_KEY || '';
 const DEFAULT_MODEL = process.env.DEFAULT_MODEL || 'gpt-4o-mini';
+const MAX_HISTORY_TURNS = Number(process.env.MAX_HISTORY_TURNS || 20);
+const DEFAULT_SYSTEM_PROMPT = process.env.SYSTEM_PROMPT || '你是一个专业、可靠、简洁的AI助手。';
+
+// 内存会话：用于保留长对话上下文
+// 结构: Map<userId, [{ role: 'system'|'user'|'assistant', content: string }]>
+const conversationStore = new Map();
 
 app.use(cors());
 app.use(express.json({ limit: '25mb' }));
@@ -59,6 +65,37 @@ function getUserId(req, res) {
     res.setHeader('X-User-ID', userId);
   }
   return userId;
+}
+
+function getConversation(userId) {
+  if (!conversationStore.has(userId)) {
+    conversationStore.set(userId, [{ role: 'system', content: DEFAULT_SYSTEM_PROMPT }]);
+  }
+  return conversationStore.get(userId);
+}
+
+function truncateConversation(history) {
+  const system = history.find((m) => m.role === 'system') || { role: 'system', content: DEFAULT_SYSTEM_PROMPT };
+  const rest = history.filter((m) => m.role !== 'system');
+  const trimmed = rest.slice(-MAX_HISTORY_TURNS * 2);
+  return [system, ...trimmed];
+}
+
+function pushUserMessage(history, message, files = []) {
+  let finalText = message || '';
+  if (files.length) {
+    const fileContext = files
+      .map((f, idx) => `${idx + 1}. ${f?.name || f?.id || '未命名附件'} ${f?.url ? `(${f.url})` : ''}`)
+      .join('\n');
+    finalText += `\n\n[附件上下文]\n${fileContext}`;
+  }
+  history.push({ role: 'user', content: finalText.trim() || '请结合已上传文件进行分析。' });
+}
+
+function pushAssistantMessage(history, text) {
+  const clean = (text || '').trim();
+  if (!clean) return;
+  history.push({ role: 'assistant', content: clean });
 }
 
 app.get('/api/health', async (req, res) => {
@@ -108,6 +145,7 @@ app.get('/api/models', async (req, res) => {
 app.post('/api/chat/stream', async (req, res) => {
   const userId = getUserId(req, res);
   const { message, files = [], model = DEFAULT_MODEL, max_tokens = 2000 } = req.body || {};
+  const history = getConversation(userId);
 
   res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
   res.setHeader('Cache-Control', 'no-cache');
@@ -119,12 +157,8 @@ app.post('/api/chat/stream', async (req, res) => {
     return res.end();
   }
 
-  const content = [{ type: 'text', text: message || '请结合已上传文件进行分析' }];
-  for (const f of files) {
-    if (f?.url) {
-      content.push({ type: 'text', text: `附件: ${f.name || f.id} (${f.url})` });
-    }
-  }
+  pushUserMessage(history, message, files);
+  const boundedHistory = truncateConversation(history);
 
   try {
     const response = await request.post(
@@ -133,7 +167,7 @@ app.post('/api/chat/stream', async (req, res) => {
         model,
         stream: true,
         max_tokens,
-        messages: [{ role: 'user', content }],
+        messages: boundedHistory,
         user: userId
       },
       {
@@ -147,6 +181,8 @@ app.post('/api/chat/stream', async (req, res) => {
     });
 
     let buffer = '';
+    let assistantText = '';
+
     response.data.on('data', (chunk) => {
       buffer += chunk.toString('utf8');
       const lines = buffer.split('\n');
@@ -166,6 +202,7 @@ app.post('/api/chat/stream', async (req, res) => {
           const json = JSON.parse(payload);
           const delta = json?.choices?.[0]?.delta?.content;
           if (delta) {
+            assistantText += delta;
             res.write(`data: ${JSON.stringify({ type: 'chunk', content: delta })}\n\n`);
           }
         } catch (err) {
@@ -175,6 +212,8 @@ app.post('/api/chat/stream', async (req, res) => {
     });
 
     response.data.on('end', () => {
+      pushAssistantMessage(history, assistantText);
+      conversationStore.set(userId, truncateConversation(history));
       res.write(`data: ${JSON.stringify({ type: 'done' })}\n\n`);
       res.write('data: [DONE]\n\n');
       res.end();
@@ -345,6 +384,63 @@ app.get('/api/retrieval', async (req, res) => {
   } catch (error) {
     res.status(500).json({ success: false, error: error.response?.data || error.message });
   }
+});
+
+// 会话级长期记忆（桥接到 OpenWebUI memories）
+app.get('/api/memories', async (req, res) => {
+  try {
+    const resp = await request.get('/api/v1/memories', { headers: getHeaders() });
+    res.json(resp.data);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.response?.data || error.message });
+  }
+});
+
+app.post('/api/memories', async (req, res) => {
+  try {
+    const resp = await request.post('/api/v1/memories', req.body || {}, {
+      headers: getHeaders({ 'Content-Type': 'application/json' })
+    });
+    res.json(resp.data);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.response?.data || error.message });
+  }
+});
+
+app.delete('/api/memories/:id', async (req, res) => {
+  try {
+    const resp = await request.delete(`/api/v1/memories/${req.params.id}`, {
+      headers: getHeaders({ 'Content-Type': 'application/json' })
+    });
+    res.json(resp.data);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.response?.data || error.message });
+  }
+});
+
+// Agent SkillGoon 能力接入（以 OpenWebUI Functions + Tools 作为技能引擎）
+app.get('/api/skillgoon/functions', async (req, res) => {
+  try {
+    const resp = await request.get('/api/v1/functions', { headers: getHeaders() });
+    res.json(resp.data);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.response?.data || error.message });
+  }
+});
+
+app.get('/api/skillgoon/tools', async (req, res) => {
+  try {
+    const resp = await request.get('/api/v1/tools', { headers: getHeaders() });
+    res.json(resp.data);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.response?.data || error.message });
+  }
+});
+
+app.post('/api/session/reset', (req, res) => {
+  const userId = getUserId(req, res);
+  conversationStore.set(userId, [{ role: 'system', content: DEFAULT_SYSTEM_PROMPT }]);
+  res.json({ success: true, message: '会话上下文已重置' });
 });
 
 app.get('/api/knowledge', async (req, res) => {

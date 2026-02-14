@@ -300,4 +300,18 @@ npm run dev:bridge
 - `/api/tts/generate`
 - `/api/models`
 - `/api/configs`
-- 以及第二阶段预留：`/api/retrieval` `/api/knowledge` `/api/prompts` `/api/chats` `/api/folders` `/api/notes` `/api/channels`
+- 第二阶段与增强：`/api/retrieval` `/api/knowledge` `/api/prompts` `/api/chats` `/api/folders` `/api/notes` `/api/channels`
+- 长对话记忆：`/api/memories`（GET/POST/DELETE）与 `/api/session/reset`
+- Agent SkillGoon 能力入口：`/api/skillgoon/functions` `/api/skillgoon/tools`（基于 OpenWebUI functions/tools）
+
+
+## 长对话与 SkillGoon 说明
+
+- 桥接层已加入按 `X-User-ID` 维度的会话上下文保留，会在每轮请求自动携带最近多轮上下文到 OpenWebUI。
+- 可通过 `MAX_HISTORY_TURNS` 控制保留轮数，默认 20。
+- 可调用 `POST /api/session/reset` 清空当前会话上下文。
+- `skillgoon` 入口通过 OpenWebUI 的 Functions/Tools 暴露：
+  - `GET /api/skillgoon/functions`
+  - `GET /api/skillgoon/tools`
+
+> 说明：你提到的“SkillGoon”目前在本仓库中未发现官方独立项目/接口定义，因此采用 OpenWebUI 原生 Agent 能力（functions/tools）作为兼容落地实现。
