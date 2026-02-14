@@ -1,0 +1,9 @@
+ignoredBuiltDependencies:
+  - core-js
+  - cypress
+  - esbuild
+  - protobufjs
+
+onlyBuiltDependencies:
+  - onnxruntime-node
+  - sharp
