@@ -266,3 +266,52 @@ AI_making/
 ## 许可证
 
 MIT
+
+
+## 使用 OpenWebUI 后端桥接（新）
+
+如果你想保留当前前端不改动，同时把后端切换为 `open-webui`，可以直接使用桥接服务：
+
+1. 复制配置文件：
+
+```bash
+cd server
+cp .env.openwebui.example .env.openwebui
+```
+
+2. 修改 `OPENWEBUI_BASE_URL`（以及可选 `OPENWEBUI_API_KEY`）。
+
+3. 启动桥接（端口仍为 `3001`，前端无需改 API 地址）：
+
+```bash
+npm run start:bridge
+```
+
+4. 联合启动（前端 + 桥接）：
+
+```bash
+npm run dev:bridge
+```
+
+桥接已包含这些兼容接口：
+- `/api/chat/stream`
+- `/api/upload` / `/api/upload/multiple`
+- `/api/files` / `/api/files/:id`
+- `/api/tts/generate`
+- `/api/models`
+- `/api/configs`
+- 第二阶段与增强：`/api/retrieval` `/api/knowledge` `/api/prompts` `/api/chats` `/api/folders` `/api/notes` `/api/channels`
+- 长对话记忆：`/api/memories`（GET/POST/DELETE）与 `/api/session/reset`
+- Agent SkillGoon 能力入口：`/api/skillgoon/functions` `/api/skillgoon/tools`（基于 OpenWebUI functions/tools）
+
+
+## 长对话与 SkillGoon 说明
+
+- 桥接层已加入按 `X-User-ID` 维度的会话上下文保留，会在每轮请求自动携带最近多轮上下文到 OpenWebUI。
+- 可通过 `MAX_HISTORY_TURNS` 控制保留轮数，默认 20。
+- 可调用 `POST /api/session/reset` 清空当前会话上下文。
+- `skillgoon` 入口通过 OpenWebUI 的 Functions/Tools 暴露：
+  - `GET /api/skillgoon/functions`
+  - `GET /api/skillgoon/tools`
+
+> 说明：你提到的“SkillGoon”目前在本仓库中未发现官方独立项目/接口定义，因此采用 OpenWebUI 原生 Agent 能力（functions/tools）作为兼容落地实现。
