@@ -1,0 +1,37 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "Qwen-VL Chat API 后端服务器",
+  "main": "worker.js",
+  "scripts": {
+    "start": "node worker.js",
+    "dev": "nodemon worker.js",
+    "start:worker": "node worker.js",
+    "start:lb": "node load-balancer.js",
+    "start:simple": "node simple-balancer.js",
+    "start:complete": "node start.js"
+  },
+  "keywords": [
+    "qwen-vl",
+    "chat",
+    "api",
+    "backend",
+    "multimodal"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.13.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "iconv-lite": "^0.7.2",
+    "ioredis": "^5.9.2",
+    "mammoth": "^1.11.0",
+    "multer": "^2.0.2",
+    "pdf-parse": "^1.1.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}

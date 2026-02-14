@@ -1,0 +1,199 @@
+/* src/components/MarkdownRenderer.css */
+/* Markdown渲染器样式 */
+.markdown-renderer {
+  font-size: 16px;
+  line-height: 1.6;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* 链接样式 */
+.markdown-link {
+  color: #4facfe;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(79, 172, 254, 0.3);
+  transition: all 0.2s;
+}
+
+.markdown-link:hover {
+  color: #00f2fe;
+  border-bottom-color: #00f2fe;
+}
+
+.external-icon {
+  font-size: 0.8em;
+  margin-left: 2px;
+  opacity: 0.7;
+}
+
+/* 代码样式 */
+.inline-code {
+  background: rgba(0, 0, 0, 0.08);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.9em;
+  color: #e83e8c;
+}
+
+.code-block-container {
+  margin: 1em 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #1e1e1e;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  background: #252526;
+  color: #ccc;
+  font-size: 14px;
+  font-family: 'Consolas', monospace;
+}
+
+.code-language {
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #9cdcfe;
+}
+
+.copy-button {
+  background: none;
+  border: none;
+  color: #ccc;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: all 0.2s;
+}
+
+.copy-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.code-block {
+  margin: 0;
+  padding: 16px;
+  overflow-x: auto;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #d4d4d4;
+}
+
+.code-block code {
+  font-family: inherit;
+}
+
+/* 表格样式 */
+.table-container {
+  overflow-x: auto;
+  margin: 1em 0;
+}
+
+.markdown-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.markdown-table th,
+.markdown-table td {
+  padding: 12px 16px;
+  border: 1px solid #e0e0e0;
+  text-align: left;
+}
+
+.markdown-table th {
+  background: #f5f5f5;
+  font-weight: 600;
+}
+
+.markdown-table tr:nth-child(even) {
+  background: #fafafa;
+}
+
+/* 引用样式 */
+.markdown-quote {
+  margin: 1em 0;
+  padding: 0.5em 1em;
+  border-left: 4px solid #4facfe;
+  background: rgba(79, 172, 254, 0.05);
+  color: #555;
+  font-style: italic;
+}
+
+/* 列表样式 */
+.markdown-list {
+  margin: 0.5em 0;
+  padding-left: 1.5em;
+}
+
+.markdown-list li {
+  margin: 0.3em 0;
+}
+
+.task-checkbox {
+  margin-right: 8px;
+}
+
+/* 图片样式 */
+.markdown-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 1em 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 标题样式 */
+.markdown-h1 {
+  font-size: 1.8em;
+  margin: 1em 0 0.5em;
+  padding-bottom: 0.3em;
+  border-bottom: 2px solid #eee;
+}
+
+.markdown-h2 {
+  font-size: 1.5em;
+  margin: 1.2em 0 0.5em;
+  padding-bottom: 0.2em;
+  border-bottom: 1px solid #eee;
+}
+
+.markdown-h3 {
+  font-size: 1.3em;
+  margin: 1em 0 0.5em;
+}
+
+.markdown-h4 {
+  font-size: 1.1em;
+  margin: 0.8em 0 0.3em;
+  font-weight: 600;
+}
+
+/* KaTeX公式样式 */
+.katex-display {
+  margin: 1.5em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 1em;
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 8px;
+}
+
+.katex {
+  font-size: 1.1em;
+}
+
+/* 用户消息特殊处理 */
+.user-message-content {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}

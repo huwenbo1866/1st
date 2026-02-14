@@ -1,0 +1,501 @@
+/* src/components/InputArea.css */
+
+/* =============== 1. 基础容器样式 =============== */
+.input-area {
+  padding: 20px;
+  background: white;
+  border-top: 1px solid #e8e8e8;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+/* =============== 2. 文件预览区域样式 =============== */
+.attached-files-section {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #e9ecef;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.file-count {
+  font-size: 12px;
+  color: #666;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.files-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.file-preview-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 12px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.file-preview-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.file-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.file-icon {
+  font-size: 24px;
+}
+
+.file-remove-btn {
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.file-remove-btn:hover:not(:disabled) {
+  background: #ff6b6b;
+  color: white;
+}
+
+.file-remove-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.file-card-body {
+  text-align: center;
+}
+
+.file-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-meta {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  font-size: 10px;
+  color: #666;
+}
+
+.file-size {
+  font-weight: 500;
+}
+
+.file-type {
+  background: rgba(0, 0, 0, 0.05);
+  padding: 1px 6px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* =============== 3. 文件上传器区域样式 =============== */
+.file-uploader-section {
+  animation: slideDown 0.3s ease;
+}
+
+/* =============== 4. 示例按钮区域样式 (已移除) =============== */
+.examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.examples-label {
+  font-size: 12px;
+  color: #666;
+  margin-right: 8px;
+}
+
+.example-button {
+  background: rgba(110, 142, 251, 0.1);
+  border: 1px solid rgba(110, 142, 251, 0.3);
+  color: #6e8efb;
+  padding: 6px 12px;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.example-button:hover:not(:disabled) {
+  background: rgba(110, 142, 251, 0.2);
+  transform: translateY(-1px);
+}
+
+.example-button.active {
+  background: #6e8efb;
+  color: white;
+  border-color: #6e8efb;
+}
+
+.example-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* =============== 5. 输入区域整体布局 =============== */
+.input-wrapper {
+  display: flex;
+  width: 100%; 
+}
+
+.message-input {
+  flex: 1;
+  min-height: 70px;
+  max-height: 120px;
+  padding: 12px 16px;
+  width: 100%;
+  border: 1px solid #e0e0e0;
+  border-radius: 22px;
+  font-size: 16px;
+  line-height: 1.5;
+  resize: none;
+  outline: none;
+  transition: all 0.3s;
+  background: #f8f9fa;
+}
+
+.message-input:focus {
+  border-color: #6e8efb;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(110, 142, 251, 0.1);
+}
+
+.message-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #f5f5f5;
+}
+
+/* =============== 6. 输入操作按钮区域 (需要修改的部分) =============== */
+.input-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* =============== 7. 通用按钮样式 (需要修改的部分) =============== */
+.action-button {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #f5f5f5;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.action-button:hover:not(:disabled) {
+  background: #e0e0e0;
+  transform: scale(1.1);
+}
+
+.action-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* =============== 8. 发送按钮样式 (需要修改的部分) =============== */
+.send-button {
+  height: 40px;
+  width: 40px;
+  background: linear-gradient(135deg, #a777e3, #6e8efb);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s;
+  box-shadow: 0 2px 8px rgba(167, 119, 227, 0.3);
+}
+
+.send-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(167, 119, 227, 0.4);
+}
+
+.send-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.sending {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.file-indicator {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+.send-icon {
+  font-size: 18px;
+  margin-top: 2px;
+}
+
+/* =============== 9. 停止生成按钮样式 (需要修改的部分) =============== */
+.stop-generate-button {
+  height: 40px;
+  width: 40px;
+  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 20px;
+  transition: all 0.3s;
+  animation: pulse 1.5s infinite;
+}
+
+.stop-generate-button:hover {
+  background: linear-gradient(135deg, #ff5252, #e53935);
+  transform: translateY(-2px);
+  animation: none;
+}
+
+@keyframes pulse {
+  0% { 
+    opacity: 0.9;
+    box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7);
+  }
+  70% { 
+    opacity: 1;
+    box-shadow: 0 0 0 6px rgba(255, 107, 107, 0);
+  }
+  100% { 
+    opacity: 0.9;
+    box-shadow: 0 0 0 0 rgba(255, 107, 107, 0);
+  }
+}
+
+/* =============== 10. 提示信息样式 =============== */
+.input-hints {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 12px;
+  color: #666;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.hint {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.hint.warning {
+  color: #ff6b6b;
+  animation: warningPulse 2s infinite;
+}
+
+@keyframes warningPulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+/* =============== 11. 响应式调整 =============== */
+@media (max-width: 768px) {
+  .input-area {
+    padding: 16px;
+  }
+  
+  .files-preview-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+  
+  .examples {
+    justify-content: center;
+  }
+  
+  .examples-label {
+    display: none;
+  }
+  
+  .input-wrapper {
+    flex-direction: column;
+  }
+  
+  .input-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+/* =============== 12. 新增的按钮行样式 (需要添加) =============== */
+.button-row {
+  display: flex;
+  justify-content: flex-end; /* 按钮靠右对齐 */
+  align-items: center;
+  gap: 12px;
+  padding: 0 8px;
+  margin-top: 8px;
+}
+/* =============== 13. 各类按钮的独立样式 (需要修改和添加) =============== */
+/* 文件上传按钮 */
+.file-upload-button {
+  background: rgba(110, 142, 251, 0.1);
+  color: #6e8efb;
+  border: 1px solid rgba(110, 142, 251, 0.3);
+}
+
+.file-upload-button:hover:not(:disabled) {
+  background: rgba(110, 142, 251, 0.2);
+  transform: scale(1.05);
+}
+
+/* =============== 清空按钮样式 =============== */
+/* 当有输入时，按钮更明显 */
+.input-clear-button:not(:disabled) {
+  background: #f87979c5 !important; /* 完全红色的背景 */
+  color: white !important;
+}
+
+.input-clear-button:hover:not(:disabled) {
+  background: #f75e5e !important; /* 悬停时更深的红色 */
+  transform: scale(1.1);
+  box-shadow: 0 4px 15px rgba(255, 68, 68, 0.486);
+}
+
+.input-clear-button:disabled {
+  background: rgba(200, 200, 200, 0.557);
+  color: #646464;
+  border-color: rgba(200, 200, 200, 0.3);
+  opacity: 0.5;
+  box-shadow: none;
+}
+/* 发送按钮 */
+.send-button {
+  background: linear-gradient(135deg, #a777e3, #6e8efb);
+  color: white;
+  box-shadow: 0 2px 8px rgba(143, 74, 228, 0.575);
+}
+
+.send-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #9a6bd9, #5a7dfa);
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(168, 114, 234, 0.74);
+}
+
+.send-button:disabled {
+  background: #e0e0e0;
+  color: #999;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* 停止按钮 */
+.stop-button {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+  color: rgb(253, 251, 251);
+  animation: pulse 1.5s infinite;
+}
+
+.stop-button:hover {
+  background: linear-gradient(135deg, #ff5252, #e53935);
+  transform: scale(1.05);
+  animation: none;
+}
+
