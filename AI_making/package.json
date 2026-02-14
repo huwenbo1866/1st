@@ -13,7 +13,9 @@
     "start:balancer": "cd server && node load-balancer.js",
     "start:simple": "cd server && node simple-balancer.js",
     "stop:all": "taskkill /f /im node.exe",
-    "clean": "taskkill /f /im node.exe && taskkill /f /im nginx.exe"
+    "clean": "taskkill /f /im node.exe && taskkill /f /im nginx.exe",
+    "start:bridge": "node server/openwebui-bridge.js",
+    "dev:bridge": "concurrently \"npm start\" \"npm run start:bridge\""
   },
   "keywords": [
     "chat",
@@ -55,7 +57,7 @@
     "@types/react-dom": "^19.2.3",
     "@types/react-katex": "^3.0.4",
     "@types/react-syntax-highlighter": "^15.5.13",
-    "@types/uuid": "^9.0.8", 
+    "@types/uuid": "^9.0.8",
     "concurrently": "^9.2.1",
     "react-scripts": "^5.0.1",
     "typescript": "^4.9.5"

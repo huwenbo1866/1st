@@ -266,3 +266,38 @@ AI_making/
 ## 许可证
 
 MIT
+
+
+## 使用 OpenWebUI 后端桥接（新）
+
+如果你想保留当前前端不改动，同时把后端切换为 `open-webui`，可以直接使用桥接服务：
+
+1. 复制配置文件：
+
+```bash
+cd server
+cp .env.openwebui.example .env.openwebui
+```
+
+2. 修改 `OPENWEBUI_BASE_URL`（以及可选 `OPENWEBUI_API_KEY`）。
+
+3. 启动桥接（端口仍为 `3001`，前端无需改 API 地址）：
+
+```bash
+npm run start:bridge
+```
+
+4. 联合启动（前端 + 桥接）：
+
+```bash
+npm run dev:bridge
+```
+
+桥接已包含这些兼容接口：
+- `/api/chat/stream`
+- `/api/upload` / `/api/upload/multiple`
+- `/api/files` / `/api/files/:id`
+- `/api/tts/generate`
+- `/api/models`
+- `/api/configs`
+- 以及第二阶段预留：`/api/retrieval` `/api/knowledge` `/api/prompts` `/api/chats` `/api/folders` `/api/notes` `/api/channels`
